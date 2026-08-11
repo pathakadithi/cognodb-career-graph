@@ -74,7 +74,7 @@ async function loadJobMatches() {
     try {
 
         const response = await fetch(
-            `${API_BASE}/job-match/?candidate=${CANDIDATE}`
+            `${API}/job-match/`
         );
 
         if (!response.ok) {
@@ -220,7 +220,7 @@ async function loadProjects() {
     try {
 
         const response = await fetch(
-            `${API_BASE}/projects/?candidate=${CANDIDATE}`
+            `${API}/projects/`
         );
 
         if (!response.ok) {
