@@ -23,9 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-vgax)ptgq&ce!=izuu$nx1^6$gfv(tb$ce9bb^z=-4a_1aehpo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "cognodb-career-graph.onrender.com",
+    "localhost",
+    "127.0.0.1",
+]
 
 
 # Application definition
