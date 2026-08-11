@@ -12,9 +12,9 @@ A career intelligence web application that helps users explore and visualize car
 * Job opportunities
 * Career relationships
 
-The project uses **Django REST Framework** for the backend API and a **React-based frontend** to provide an interactive dashboard. **Neo4j** is used as the graph database for storing and querying relationships between career entities.
+The project uses **Django REST Framework** for the backend API and a **React-based frontend** to provide an interactive dashboard. **CognoDB** is used as the graph database for storing and querying relationships between career entities.
 
-##  Architecture
+## Architecture
 
 ```text
                     ┌─────────────────────┐
@@ -29,10 +29,10 @@ The project uses **Django REST Framework** for the backend API and a **React-bas
                     │ Django + DRF        │
                     └──────────┬──────────┘
                                │
-                               │ Cypher / Neo4j Driver
+                               │ Graph Database Driver
                                ▼
                     ┌─────────────────────┐
-                    │      Neo4j          │
+                    │      CognoDB        │
                     │   Graph Database    │
                     └─────────────────────┘
 ```
@@ -55,7 +55,9 @@ The project uses **Django REST Framework** for the backend API and a **React-bas
 * django-cors-headers
 
 ### Graph Database
+
 * CognoDB
+* Neo4j Python Driver
 
 ### Other Tools
 
@@ -121,12 +123,12 @@ pip install -r requirements.txt
 
 ### 4. Configure environment variables
 
-Create a `.env` file in the project root and add your Neo4j configuration:
+Create a `.env` file in the project root and add your CognoDB connection details:
 
 ```env
-NEO4J_URI=your_neo4j_uri
-NEO4J_USERNAME=your_neo4j_username
-NEO4J_PASSWORD=your_neo4j_password
+COGNODB_URI=your_cognodb_uri
+COGNODB_USERNAME=your_cognodb_username
+COGNODB_PASSWORD=your_cognodb_password
 ```
 
 **Do not commit your `.env` file to GitHub.**
@@ -151,7 +153,7 @@ http://127.0.0.1:8000/
 
 ### 7. Start the frontend
 
-Open another terminal, navigate to the frontend directory:
+Open another terminal and navigate to the frontend directory:
 
 ```bash
 cd frontend
@@ -180,10 +182,11 @@ The API layer is implemented using:
 * Django
 * Django REST Framework
 * Neo4j Python Driver
+* CognoDB
 
 ## 🧠 Graph Database
 
-Neo4j allows career entities to be represented as nodes and their relationships as graph connections.
+CognoDB is used to represent career entities as nodes and their relationships as graph connections.
 
 Example conceptual structure:
 
@@ -220,7 +223,7 @@ Run it with:
 python test_connection.py
 ```
 
-## Security
+## 🔐 Security
 
 Sensitive configuration such as database credentials should be stored in environment variables.
 
@@ -232,7 +235,7 @@ venv/
 __pycache__/
 ```
 
-## Future Improvements
+## 🚀 Future Improvements
 
 Possible future enhancements include:
 
@@ -245,7 +248,7 @@ Possible future enhancements include:
 * Authentication and user profiles
 * Deployment to a cloud platform
 
-## Author
+## 👩‍💻 Author
 
 **Pathak Adithi**
 
