@@ -1,0 +1,176 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f7fb;
+    color: #1f2937;
+    line-height: 1.6;
+}
+
+header {
+    background: #111827;
+    color: white;
+    padding: 32px 8%;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    font-size: 32px;
+    margin-bottom: 5px;
+}
+
+header p {
+    color: #cbd5e1;
+    font-size: 16px;
+}
+
+main {
+    width: 84%;
+    max-width: 1200px;
+    margin: auto;
+    padding-bottom: 50px;
+}
+
+section {
+    margin-bottom: 35px;
+}
+
+section > h2 {
+    font-size: 24px;
+    margin-bottom: 18px;
+    color: #111827;
+}
+
+/* Candidate */
+
+.candidate-card {
+    background: white;
+    border-radius: 14px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e5e7eb;
+}
+
+.candidate-card h3 {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.candidate-card p {
+    margin-bottom: 10px;
+}
+
+/* Cards */
+
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 14px;
+    padding: 22px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.09);
+}
+
+.card h3 {
+    font-size: 19px;
+    margin-bottom: 8px;
+    color: #111827;
+}
+
+.card p {
+    margin: 9px 0;
+    color: #4b5563;
+}
+
+/* Match percentage */
+
+.match {
+    font-size: 20px !important;
+    font-weight: bold;
+    margin-top: 15px !important;
+    color: #16a34a !important;
+}
+
+/* Skills */
+
+.skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 8px;
+}
+
+.badge {
+    display: inline-block;
+    background: #eef2ff;
+    color: #4338ca;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Missing skills */
+
+.missing {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.no-gap {
+    color: #16a34a;
+    font-weight: 600;
+}
+
+/* Projects */
+
+.project-card {
+    border-left: 5px solid #6366f1;
+}
+
+.label {
+    font-weight: bold;
+    color: #374151;
+}
+
+/* Loading */
+
+.loading {
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* Responsive */
+
+@media (max-width: 700px) {
+    header {
+        padding: 25px 5%;
+    }
+
+    header h1 {
+        font-size: 25px;
+    }
+
+    main {
+        width: 90%;
+    }
+
+    .card-container {
+        grid-template-columns: 1fr;
+    }
+}
