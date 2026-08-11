@@ -24,7 +24,7 @@ async function loadCandidate() {
     try {
 
         const response = await fetch(
-            `${API_BASE}/candidate/?name=${CANDIDATE}`
+            `${API}/candidate/?name=${CANDIDATE}`
         );
 
         if (!response.ok) {
@@ -58,7 +58,7 @@ async function loadCandidate() {
             </p>
         `;
 
-        console.error(error);
+        console.error("Candidate error:", error);
     }
 }
 
@@ -131,7 +131,7 @@ async function loadJobMatches() {
             </p>
         `;
 
-        console.error(error);
+        console.error("Job matches error:", error);
     }
 }
 
@@ -147,7 +147,7 @@ async function loadSkillGaps() {
     try {
 
         const response = await fetch(
-            `${API_BASE}/skill-gaps/?candidate=${CANDIDATE}`
+            `${API}/skill-gaps/?candidate=${CANDIDATE}`
         );
 
         if (!response.ok) {
@@ -204,7 +204,7 @@ async function loadSkillGaps() {
             </p>
         `;
 
-        console.error(error);
+        console.error("Skill gaps error:", error);
     }
 }
 
@@ -268,7 +268,7 @@ async function loadProjects() {
             </p>
         `;
 
-        console.error(error);
+        console.error("Projects error:", error);
     }
 }
 
