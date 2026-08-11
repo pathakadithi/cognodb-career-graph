@@ -1,25 +1,42 @@
 # CognoDB Career Graph
 
-A career intelligence web application that helps users explore and visualize career paths, skills, roles, and relationships using a graph-based data model.
+A career intelligence web application that helps users explore career paths, skills, projects, technologies, job opportunities, and skill gaps using a graph-based data model.
 
 ## 🚀 Overview
 
 **CognoDB Career Graph** is a full-stack web application designed to represent career information as interconnected entities such as:
 
+* Candidates
 * Career roles
 * Skills
 * Technologies
+* Projects
 * Job opportunities
-* Career relationships
 
-The project uses **Django REST Framework** for the backend API and a **React-based frontend** to provide an interactive dashboard. **CognoDB** is used as the graph database for storing and querying relationships between career entities.
+The application uses **Django REST Framework** for the backend API and a lightweight HTML/CSS/JavaScript frontend for the career intelligence dashboard. **CognoDB** is used as the graph database for storing and querying relationships between career entities.
 
-## Architecture
+The application analyzes a candidate's existing skills and projects to identify suitable job opportunities, calculate skill matches, and highlight missing skills.
+
+## 🧠 Why a Graph Database?
+
+Career intelligence is fundamentally relationship-driven. A candidate is connected to skills, projects are connected to skills and technologies, and jobs are connected to the skills they require.
+
+CognoDB makes it straightforward to traverse these relationships across multiple hops. For example:
+
+```text
+Candidate → Project → Skill ← Job
+```
+
+This allows the application to identify jobs connected to skills demonstrated through projects built by a candidate.
+
+In a relational database, the same analysis would require multiple tables and JOIN operations across candidates, projects, skills, technologies, and jobs. The graph model keeps these relationships explicit and makes relationship-based queries easier to express and extend.
+
+## 🏗️ Architecture
 
 ```text
                     ┌─────────────────────┐
                     │     Frontend        │
-                    │   React / Vite      │
+                    │ HTML / CSS / JS     │
                     └──────────┬──────────┘
                                │
                                │ REST API
@@ -29,7 +46,7 @@ The project uses **Django REST Framework** for the backend API and a **React-bas
                     │ Django + DRF        │
                     └──────────┬──────────┘
                                │
-                               │ Graph Database Driver
+                               │ Neo4j Driver
                                ▼
                     ┌─────────────────────┐
                     │      CognoDB        │
@@ -37,15 +54,110 @@ The project uses **Django REST Framework** for the backend API and a **React-bas
                     └─────────────────────┘
 ```
 
+## 🕸️ Data Model
+
+The application uses the following graph model:
+
+```text
+                         ┌─────────────┐
+                         │  Candidate  │
+                         └──────┬──────┘
+                                │
+                         HAS_SKILL
+                                │
+                                ▼
+                         ┌─────────────┐
+                         │    Skill    │
+                         └──────▲──────┘
+                                │
+                             REQUIRES
+                                │
+                                │
+                         ┌──────┴──────┐
+                         │     Job     │
+                         └─────────────┘
+
+
+Candidate
+    │
+   BUILT
+    ▼
+ Project
+    │
+    ├── USES ──────────────→ Skill
+    │
+    └── USES_TECHNOLOGY ──→ Technology
+```
+
+### Node Types
+
+* `Candidate`
+* `Skill`
+* `Job`
+* `Project`
+* `Technology`
+
+### Relationship Types
+
+* `HAS_SKILL`
+* `BUILT`
+* `USES`
+* `USES_TECHNOLOGY`
+* `REQUIRES`
+
+## 🔍 Main Graph Queries
+
+### Job Matching
+
+The application finds the skills associated with a candidate and compares them with the skills required by each job.
+
+```cypher
+MATCH (c:Candidate {name: $candidate_name})-[:HAS_SKILL]->(s:Skill)
+WITH c, collect(s.name) AS candidate_skills
+
+MATCH (j:Job)-[:REQUIRES]->(required:Skill)
+WITH j, candidate_skills, collect(required.name) AS required_skills
+
+WITH
+    j,
+    candidate_skills,
+    required_skills,
+    [skill IN required_skills
+     WHERE skill IN candidate_skills] AS matched_skills
+
+RETURN
+    j.title AS title,
+    j.company AS company,
+    matched_skills,
+    required_skills
+```
+
+The candidate name is supplied as a parameter through the official Neo4j Python driver rather than being concatenated into the Cypher query.
+
+### Multi-Hop Career Relationship
+
+The application can traverse relationships between a candidate's projects, the skills used in those projects, and technologies used by those projects:
+
+```cypher
+MATCH (c:Candidate {name: $candidate_name})-[:BUILT]->(p:Project)
+OPTIONAL MATCH (p)-[:USES]->(s:Skill)
+OPTIONAL MATCH (p)-[:USES_TECHNOLOGY]->(t:Technology)
+
+RETURN
+    p.name AS name,
+    collect(DISTINCT s.name) AS skills,
+    collect(DISTINCT t.name) AS technologies
+```
+
+This demonstrates multi-hop traversal through the career graph.
+
 ## 🛠️ Technologies Used
 
 ### Frontend
 
-* React
-* JavaScript
 * HTML5
 * CSS3
-* Vite
+* JavaScript
 
 ### Backend
 
@@ -75,7 +187,7 @@ cognodb-career-graph/
 │   └── Backend configuration and API components
 │
 ├── frontend/
-│   └── React frontend and dashboard
+│   └── HTML, CSS, JavaScript and dashboard
 │
 ├── career/
 │   ├── migrations/
@@ -118,28 +230,42 @@ venv\Scripts\activate
 ### 3. Install dependencies
 
 ```bash
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
-### 4. Configure environment variables
+### 4. Configure CognoDB
 
-Create a `.env` file in the project root and add your CognoDB connection details:
+Create a `.env` file in the project root:
 
 ```env
 COGNODB_URI=your_cognodb_uri
-COGNODB_USERNAME=your_cognodb_username
+COGNODB_USERNAME=cognodb
 COGNODB_PASSWORD=your_cognodb_password
 ```
 
-**Do not commit your `.env` file to GitHub.**
+The CognoDB connection details are read from environment variables.
 
-### 5. Run Django migrations
+**Never commit the `.env` file or database credentials to GitHub.**
+
+### 5. Seed the database
+
+The repository includes a seed script containing realistic career data.
+
+Run:
+
+```bash
+python -m career.seed
+```
+
+The seed script creates the candidate, skills, jobs, projects, technologies, and their relationships.
+
+### 6. Run Django migrations
 
 ```bash
 python manage.py migrate
 ```
 
-### 6. Start the backend
+### 7. Start the backend
 
 ```bash
 python manage.py runserver
@@ -151,7 +277,7 @@ The Django backend will normally be available at:
 http://127.0.0.1:8000/
 ```
 
-### 7. Start the frontend
+### 8. Start the frontend
 
 Open another terminal and navigate to the frontend directory:
 
@@ -159,73 +285,48 @@ Open another terminal and navigate to the frontend directory:
 cd frontend
 ```
 
-Install frontend dependencies:
+Open the frontend using your preferred local development server.
 
-```bash
-npm install
-```
-
-Start the development server:
-
-```bash
-npm run dev
-```
-
-The frontend will normally be available at the URL displayed by Vite.
+The frontend communicates with the Django REST API to retrieve career data.
 
 ## 🔗 API
 
-The Django backend exposes REST API endpoints used by the frontend to retrieve and work with career-related data.
+The Django backend exposes REST API endpoints used by the frontend.
 
-The API layer is implemented using:
+The API layer uses:
 
-* Django
 * Django REST Framework
-* Neo4j Python Driver
 * CognoDB
+* Neo4j Python Driver
+* Parameterized Cypher queries
 
-## 🧠 Graph Database
+The application provides endpoints for:
 
-CognoDB is used to represent career entities as nodes and their relationships as graph connections.
-
-Example conceptual structure:
-
-```text
-       ┌─────────────┐
-       │   Career    │
-       │    Role     │
-       └──────┬──────┘
-              │ requires
-              ▼
-       ┌─────────────┐
-       │   Skill     │
-       └──────┬──────┘
-              │ related_to
-              ▼
-       ┌─────────────┐
-       │ Technology  │
-       └─────────────┘
-```
-
-This graph structure makes it possible to explore relationships between careers, skills, and technologies.
+* Candidate profile
+* Job matches
+* Skill gaps
+* Candidate projects
+* CognoDB health/connectivity
 
 ## 🧪 Testing
 
-A connection test is included in:
+A CognoDB connection test is included in:
 
 ```text
 test_connection.py
 ```
 
-Run it with:
+Run:
 
 ```bash
 python test_connection.py
 ```
 
+The API also includes a health-check endpoint that reports whether the CognoDB connection is available.
+
 ## 🔐 Security
 
-Sensitive configuration such as database credentials should be stored in environment variables.
+Sensitive configuration such as database credentials is stored in environment variables.
 
 The following files should **not** be committed:
 
@@ -234,6 +335,16 @@ The following files should **not** be committed:
 venv/
 __pycache__/
 ```
+
+## 📸 Screenshots
+
+### Dashboard
+
+![Career Intelligence Dashboard](screenshots/dashboard.png)
+
+### Career Details
+
+![Job Matches and Skill Gaps](screenshots/career-details.png)
 
 ## 🚀 Future Improvements
 
@@ -246,7 +357,7 @@ Possible future enhancements include:
 * Job-market data integration
 * Interactive graph visualization
 * Authentication and user profiles
-* Deployment to a cloud platform
+* Cloud deployment
 
 ## 👩‍💻 Author
 
@@ -260,3 +371,4 @@ https://github.com/pathakadithi
 ---
 
 ⭐ If you find this project useful, feel free to explore the repository and provide feedback.
+
